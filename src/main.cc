@@ -11,18 +11,21 @@ static struct wave* wv;
 void
 setup()
 {
+#if 1
     randomSeed(analogRead(A0));
-    // put your setup code here, to run once:
-    Serial.begin(9600);
+    // Serial.begin(9600);
     driver = driver_init(60);
 
-    wv = explode_make(&driver);
+    wv = wave_random(&driver);
+#else
+// wv = NULL;
+#endif
 }
 
 void
 loop()
 {
-    // put your main code here, to run repeatedly:
+#if 1
     if (wv && !wave_tick(wv)) {
         driver.fastled->clear(true);
         wave_destroy(wv);
@@ -30,4 +33,9 @@ loop()
     };
 
     Serial.println((int)(uintptr_t)wv);
+#else
+    driver.fastled->clear();
+    driver.out[0] = CRGB::Blue;
+    driver.fastled->show();
+#endif
 }

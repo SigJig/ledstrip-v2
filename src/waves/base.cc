@@ -12,8 +12,7 @@ struct wave*
 wave_random(struct fl_driver* driver)
 {
     return wave_factories[random(0, sizeof(wave_factories) /
-                                        sizeof(*wave_factories)) -
-                          1](driver);
+                                        sizeof(*wave_factories))](driver);
 }
 
 struct wave*
