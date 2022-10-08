@@ -19,14 +19,12 @@ wave_random(struct fl_driver* driver)
 struct wave*
 wave_make(struct fl_driver* driver, struct wave_iface* iface)
 {
-    Serial.println(1);
     struct wave* wave = (struct wave*)malloc(sizeof(*wave));
 
     if (!wave) {
         return NULL;
     }
 
-    Serial.println(2);
     *wave = (struct wave){.last_tick = 0,
                           .tick_interval = WAVE_TICK_INTERVAL,
                           .driver = driver,
@@ -41,8 +39,6 @@ wave_make(struct fl_driver* driver, struct wave_iface* iface)
             return NULL;
         }
     }
-
-    Serial.println(3);
 
     return wave;
 }
