@@ -88,9 +88,8 @@ tick(struct wave* wv)
     wv->driver->fastled->show();
 
     if (data->count < data->num_pulses) {
-        if (!last ||
-            last->pos >= data->pulse_length &&
-                last->pos - data->pulse_length >= data->pulse_interval) {
+        if (!last || (last->pos >= data->pulse_length &&
+                      last->pos - data->pulse_length >= data->pulse_interval)) {
 
             data->tail->next = _pulse_new();
             data->tail = data->tail->next;
@@ -103,6 +102,8 @@ tick(struct wave* wv)
     return 1;
 }
 
+static void destroy(void*);
+
 static void*
 make(struct wave* wv)
 {
@@ -112,7 +113,7 @@ make(struct wave* wv)
         return NULL;
     }
 
-    data->count = 0;
+    data->count = 1;
     data->num_pulses = NUM_PULSES;
     data->pulse_interval = PULSE_INTERVAL;
     data->pulse_length = PULSE_LENGTH;

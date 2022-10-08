@@ -14,7 +14,7 @@ random_color(void)
 static inline struct CRGB
 random_crgb(void)
 {
-    return CHSV(random_color(), 255, 100);
+    return CHSV(random_color(), 255, 180);
     // return (struct CRGB){random_color(), random_color(), random_color()};
 }
 

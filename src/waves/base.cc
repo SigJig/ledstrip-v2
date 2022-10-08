@@ -4,9 +4,10 @@
 #include "base.h"
 #include "explode.h"
 #include "implode.h"
+#include "pulse.h"
 
-static struct wave* (*wave_factories[])(struct fl_driver*) = {explode_make,
-                                                              implode_make};
+static struct wave* (*wave_factories[])(struct fl_driver*) = {
+    explode_make, implode_make, pulse_make};
 
 struct wave*
 wave_random(struct fl_driver* driver)
@@ -27,7 +28,7 @@ wave_make(struct fl_driver* driver, struct wave_iface* iface)
 
     Serial.println(2);
     *wave = (struct wave){.last_tick = 0,
-                          .tick_interval = 25,
+                          .tick_interval = WAVE_TICK_INTERVAL,
                           .driver = driver,
                           .iface = iface,
                           .data = NULL};

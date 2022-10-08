@@ -4,6 +4,8 @@
 
 #include "../driver.h"
 
+#define WAVE_TICK_INTERVAL 100
+
 struct wave_iface {
     uint8_t (*tick)(struct wave*);
     void* (*make)(struct wave*);
