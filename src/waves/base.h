@@ -1,10 +1,10 @@
 
-#ifndef BASE_H
-#define BASE_H
+#ifndef WAVE_BASE_H
+#define WAVE_BASE_H
 
 #include "../driver.h"
 
-#define WAVE_TICK_INTERVAL 100
+#define WAVE_TICK_INTERVAL 25
 
 struct wave_iface {
     uint8_t (*tick)(struct wave*);
@@ -25,6 +25,7 @@ struct wave* wave_random(struct fl_driver* driver);
 
 uint8_t wave_tick(struct wave* wv);
 struct wave* wave_make(struct fl_driver* driver, struct wave_iface* iface);
+
 void wave_destroy(struct wave* wv);
 
-#endif // BASE_H
+#endif // WAVE_BASE_H

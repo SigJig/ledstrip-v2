@@ -12,9 +12,11 @@ void
 setup()
 {
 #if 1
-    randomSeed(analogRead(A0));
-    // Serial.begin(9600);
+    // randomSeed(analogRead(A0));
+    Serial.begin(9600);
+    Serial.println("start");
     driver = driver_init(60);
+    Serial.println("hmm");
 
     wv = wave_random(&driver);
 #else
@@ -30,9 +32,9 @@ loop()
         driver.fastled->clear(true);
         wave_destroy(wv);
         wv = wave_random(&driver);
+        Serial.println((int)(uintptr_t)wv);
     };
 
-    Serial.println((int)(uintptr_t)wv);
 #else
     driver.fastled->clear();
     driver.out[0] = CRGB::Blue;

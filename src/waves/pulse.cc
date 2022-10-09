@@ -1,9 +1,10 @@
 
 #include "pulse.h"
 #include "../utils.h"
+#include "colors/sin.h"
 
 struct pulse {
-    CRGB color;
+    struct colorizer color;
     uint8_t pos;
     struct pulse* next;
 };
@@ -28,7 +29,8 @@ _pulse_tick(struct pulse* pulse, struct pulse_data* data, struct wave* wv)
     }
 
     if (pulse->pos < wv->driver->num_leds) {
-        wv->driver->out[pulse->pos] = pulse->color;
+        wv->driver->out[pulse->pos] =
+            pulse->color.iface->get(pulse->color.data);
     } else if (pulse->pos - data->pulse_length >= wv->driver->num_leds) {
         return 0;
     }
@@ -37,7 +39,7 @@ _pulse_tick(struct pulse* pulse, struct pulse_data* data, struct wave* wv)
 }
 
 static struct pulse*
-_pulse_new(void)
+_pulse_new(struct pulse_data* pd)
 {
     struct pulse* p = (struct pulse*)malloc(sizeof(*p));
 
@@ -45,11 +47,21 @@ _pulse_new(void)
         return NULL;
     }
 
-    p->color = random_crgb();
+    p->color = sin_color((pd->count - 1) * (255 / pd->num_pulses));
     p->pos = 0;
     p->next = NULL;
 
     return p;
+}
+
+static void
+_pulse_destroy(struct pulse* p)
+{
+    if (p->color.iface->destroy) {
+        p->color.iface->destroy(p->color.data);
+    }
+
+    free(p);
 }
 
 static uint8_t
@@ -91,7 +103,7 @@ tick(struct wave* wv)
         if (!last || (last->pos >= data->pulse_length &&
                       last->pos - data->pulse_length >= data->pulse_interval)) {
 
-            data->tail->next = _pulse_new();
+            data->tail->next = _pulse_new(data);
             data->tail = data->tail->next;
             data->count++;
         }
@@ -117,7 +129,7 @@ make(struct wave* wv)
     data->num_pulses = NUM_PULSES;
     data->pulse_interval = PULSE_INTERVAL;
     data->pulse_length = PULSE_LENGTH;
-    data->head = _pulse_new();
+    data->head = _pulse_new(data);
 
     if (!data->head) {
         destroy(data);
@@ -142,7 +154,7 @@ destroy(void* data)
 
     while (cur) {
         tmp = cur->next;
-        free(cur);
+        _pulse_destroy(cur);
         cur = tmp;
     }
 

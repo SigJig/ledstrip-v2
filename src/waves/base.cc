@@ -7,7 +7,10 @@
 #include "pulse.h"
 
 static struct wave* (*wave_factories[])(struct fl_driver*) = {
-    explode_make, implode_make, pulse_make};
+    explode_make,
+    implode_make,
+    pulse_make,
+};
 
 struct wave*
 wave_random(struct fl_driver* driver)
@@ -15,7 +18,6 @@ wave_random(struct fl_driver* driver)
     return wave_factories[random(0, sizeof(wave_factories) /
                                         sizeof(*wave_factories))](driver);
 }
-
 struct wave*
 wave_make(struct fl_driver* driver, struct wave_iface* iface)
 {
