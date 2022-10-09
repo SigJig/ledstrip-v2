@@ -14,7 +14,7 @@ setup()
 #if 1
     randomSeed(analogRead(A0));
     Serial.begin(9600);
-    driver = driver_init(60);
+    driver = driver_init(60 << 1);
 
     wv = wave_random(&driver);
 #else

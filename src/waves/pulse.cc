@@ -79,6 +79,22 @@ _pulse_destroy(struct pulse* p)
 }
 
 static uint8_t
+__available(struct pulse* last, struct pulse_data* data,
+            struct fl_driver* driver)
+{
+    return !data->reverse && last->pos >= data->pulse_length &&
+           last->pos - data->pulse_length >= data->pulse_interval;
+}
+
+static uint8_t
+__available_reverse(struct pulse* last, struct pulse_data* data,
+                    struct fl_driver* driver)
+{
+    return data->reverse && driver->num_leds - last->pos + data->pulse_length <
+                                driver->num_leds - data->pulse_interval;
+}
+
+static uint8_t
 tick(struct wave* wv)
 {
     struct pulse_data* data = (struct pulse_data*)wv->data;
@@ -114,12 +130,8 @@ tick(struct wave* wv)
     wv->driver->fastled->show();
 
     if (data->count < data->num_pulses) {
-        if (!last ||
-            (!data->reverse && last->pos >= data->pulse_length &&
-             last->pos - data->pulse_length >= data->pulse_interval) ||
-            (data->reverse &&
-             wv->driver->num_leds - last->pos + data->pulse_length <
-                 wv->driver->num_leds - data->pulse_interval)) {
+        if (!last || __available(last, data, wv->driver) ||
+            __available_reverse(last, data, wv->driver)) {
 
             data->tail->next = _pulse_new(data);
             data->tail = data->tail->next;
