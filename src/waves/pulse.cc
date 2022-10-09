@@ -5,7 +5,7 @@
 
 struct pulse {
     struct colorizer color;
-    uint8_t pos;
+    int16_t pos;
     struct pulse* next;
 };
 
@@ -14,6 +14,7 @@ struct pulse_data {
     uint8_t num_pulses;
     uint8_t pulse_interval;
     uint8_t pulse_length;
+    uint8_t reverse;
 
     struct pulse* head;
     struct pulse* tail;
@@ -23,6 +24,22 @@ static uint8_t
 _pulse_tick(struct pulse* pulse, struct pulse_data* data, struct wave* wv)
 {
     pulse->pos++;
+
+    if (data->reverse) {
+        int16_t rpos = wv->driver->num_leds - 1 - pulse->pos;
+
+        if (rpos + data->pulse_length < wv->driver->num_leds - 1) {
+            wv->driver->out[rpos + data->pulse_length] = CRGB::Black;
+        }
+
+        if (rpos >= 0) {
+            wv->driver->out[rpos] = colorizer_get(&pulse->color);
+        } else if (rpos + data->pulse_length < 0) {
+            return 0;
+        }
+
+        return 1;
+    }
 
     if (pulse->pos >= data->pulse_length) {
         wv->driver->out[pulse->pos - data->pulse_length] = CRGB::Black;
@@ -97,8 +114,12 @@ tick(struct wave* wv)
     wv->driver->fastled->show();
 
     if (data->count < data->num_pulses) {
-        if (!last || (last->pos >= data->pulse_length &&
-                      last->pos - data->pulse_length >= data->pulse_interval)) {
+        if (!last ||
+            (!data->reverse && last->pos >= data->pulse_length &&
+             last->pos - data->pulse_length >= data->pulse_interval) ||
+            (data->reverse &&
+             wv->driver->num_leds - last->pos + data->pulse_length <
+                 wv->driver->num_leds - data->pulse_interval)) {
 
             data->tail->next = _pulse_new(data);
             data->tail = data->tail->next;
@@ -126,6 +147,7 @@ make(struct wave* wv)
     data->num_pulses = NUM_PULSES;
     data->pulse_interval = PULSE_INTERVAL;
     data->pulse_length = PULSE_LENGTH;
+    data->reverse = random(0, 2);
     data->head = _pulse_new(data);
 
     if (!data->head) {

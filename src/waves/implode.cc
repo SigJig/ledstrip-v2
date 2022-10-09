@@ -47,7 +47,7 @@ make(struct wave* wv)
         return NULL;
     }
 
-    data->color = colorizer_sin(0);
+    data->color = colorizer_sin(random(0, 256));
     data->center = (wv->driver->num_leds >> 1) - 1;
     data->offset = 0;
 

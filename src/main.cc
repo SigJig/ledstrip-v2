@@ -12,11 +12,9 @@ void
 setup()
 {
 #if 1
-    // randomSeed(analogRead(A0));
+    randomSeed(analogRead(A0));
     Serial.begin(9600);
-    Serial.println("start");
     driver = driver_init(60);
-    Serial.println("hmm");
 
     wv = wave_random(&driver);
 #else
