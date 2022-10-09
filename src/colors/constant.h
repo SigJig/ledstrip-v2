@@ -4,6 +4,6 @@
 
 #include "base.h"
 
-struct colorizer constant_color(void);
+struct colorizer colorizer_constant(void);
 
 #endif // COLORS_CONSTANT_H

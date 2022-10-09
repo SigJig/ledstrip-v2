@@ -29,8 +29,7 @@ _pulse_tick(struct pulse* pulse, struct pulse_data* data, struct wave* wv)
     }
 
     if (pulse->pos < wv->driver->num_leds) {
-        wv->driver->out[pulse->pos] =
-            pulse->color.iface->get(pulse->color.data);
+        wv->driver->out[pulse->pos] = colorizer_get(&pulse->color);
     } else if (pulse->pos - data->pulse_length >= wv->driver->num_leds) {
         return 0;
     }
@@ -47,7 +46,7 @@ _pulse_new(struct pulse_data* pd)
         return NULL;
     }
 
-    p->color = sin_color((pd->count - 1) * (255 / pd->num_pulses));
+    p->color = colorizer_sin((pd->count - 1) * (255 / pd->num_pulses));
     p->pos = 0;
     p->next = NULL;
 
@@ -57,9 +56,7 @@ _pulse_new(struct pulse_data* pd)
 static void
 _pulse_destroy(struct pulse* p)
 {
-    if (p->color.iface->destroy) {
-        p->color.iface->destroy(p->color.data);
-    }
+    colorizer_destroy(&p->color);
 
     free(p);
 }

@@ -14,4 +14,18 @@ struct colorizer {
     struct colorizer_iface* iface;
 };
 
+static inline CRGB
+colorizer_get(struct colorizer* colorizer)
+{
+    return colorizer->iface->get(colorizer->data);
+}
+
+static inline void
+colorizer_destroy(struct colorizer* colorizer)
+{
+    if (colorizer->iface->destroy) {
+        colorizer->iface->destroy(colorizer->data);
+    }
+}
+
 #endif // COLORS_BASE_H

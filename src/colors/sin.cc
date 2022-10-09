@@ -19,7 +19,7 @@ static struct colorizer_iface iface {
 };
 
 struct colorizer
-sin_color(uint8_t offset)
+colorizer_sin(uint8_t offset)
 {
     uint8_t* mem = (uint8_t*)malloc(sizeof(*mem));
 

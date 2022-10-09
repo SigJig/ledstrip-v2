@@ -16,7 +16,7 @@ static struct colorizer_iface iface {
 };
 
 struct colorizer
-constant_color(CRGB color)
+colorizer_constant(CRGB color)
 {
     CRGB* mem = (CRGB*)malloc(sizeof(*mem));
 

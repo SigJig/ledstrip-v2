@@ -1,9 +1,10 @@
 
 #include "implode.h"
 #include "../utils.h"
+#include "colors/sin.h"
 
 struct implode_data {
-    CRGB color;
+    struct colorizer color;
     uint8_t center, offset;
 };
 
@@ -12,8 +13,10 @@ tick(struct wave* wv)
 {
     struct implode_data* data = (struct implode_data*)wv->data;
 
-    wv->driver->out[data->offset] = data->color;
-    wv->driver->out[wv->driver->num_leds - 1 - data->offset] = data->color;
+    wv->driver->out[data->offset] = colorizer_get(&data->color);
+    wv->driver->out[wv->driver->num_leds - 1 - data->offset] =
+        colorizer_get(&data->color);
+
     wv->driver->fastled->show();
 
     data->offset++;
@@ -29,6 +32,8 @@ static void
 destroy(void* data)
 {
     if (data) {
+        colorizer_destroy(&((struct implode_data*)data)->color);
+
         free(data);
     }
 }
@@ -42,7 +47,7 @@ make(struct wave* wv)
         return NULL;
     }
 
-    data->color = random_crgb();
+    data->color = colorizer_sin(0);
     data->center = (wv->driver->num_leds >> 1) - 1;
     data->offset = 0;
 

@@ -4,6 +4,6 @@
 
 #include "base.h"
 
-struct colorizer sin_color(uint8_t offset);
+struct colorizer colorizer_sin(uint8_t offset);
 
 #endif // COLORS_SIN_H

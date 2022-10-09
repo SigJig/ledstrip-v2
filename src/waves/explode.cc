@@ -1,9 +1,10 @@
 
 #include "explode.h"
 #include "../utils.h"
+#include "colors/sin.h"
 
 struct explode_data {
-    CRGB color;
+    struct colorizer color;
     uint8_t offset;
     uint8_t center;
 };
@@ -13,8 +14,8 @@ tick(struct wave* wv)
 {
     struct explode_data* data = (struct explode_data*)wv->data;
 
-    wv->driver->out[data->center + data->offset] = data->color;
-    wv->driver->out[data->center - data->offset] = data->color;
+    wv->driver->out[data->center + data->offset] = colorizer_get(&data->color);
+    wv->driver->out[data->center - data->offset] = colorizer_get(&data->color);
     wv->driver->fastled->show();
 
     data->offset++;
@@ -29,6 +30,8 @@ tick(struct wave* wv)
 static void
 destroy(void* data)
 {
+    colorizer_destroy(&((struct explode_data*)data)->color);
+
     if (data) {
         free(data);
     }
@@ -43,7 +46,7 @@ make(struct wave* wv)
         return NULL;
     }
 
-    data->color = random_crgb();
+    data->color = colorizer_sin(0);
     data->offset = 0;
     data->center = (wv->driver->num_leds >> 1) - 1;
 
