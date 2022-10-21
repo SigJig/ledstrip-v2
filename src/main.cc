@@ -8,13 +8,21 @@
 static struct fl_driver driver;
 static struct wave* wv;
 
+#include "utils/pool.h"
+
+static pool_byte_ty pool[POOL_REAL_SIZE(10, sizeof(int))];
+
 void
 setup()
 {
 #if 1
     randomSeed(analogRead(A0));
     Serial.begin(9600);
-    driver = driver_init(60 << 1);
+    driver = driver_init(60 * 2);
+
+    Serial.print("Initializing pool with size: ");
+    Serial.println(POOL_REAL_SIZE(10, sizeof(int)));
+    p_init(pool, 10, sizeof(int));
 
     wv = wave_random(&driver);
 #else
@@ -32,6 +40,12 @@ loop()
         wv = wave_random(&driver);
         Serial.println((int)(uintptr_t)wv);
     };
+
+    Serial.println("Alloc: ");
+    void* mem = p_alloc(pool);
+    Serial.println("Free: ");
+    p_free(mem);
+    Serial.println("Done");
 
 #else
     driver.fastled->clear();

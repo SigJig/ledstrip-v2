@@ -15,7 +15,7 @@ struct pool {
 };
 
 #define POOL_REAL_SIZE(nitems, bytes)                                          \
-    (bytes * nitems + (sizeof(pool_header_ty) * nitems))
+    (sizeof(struct pool) + (bytes + sizeof(pool_header_ty)) * nitems)
 
 void p_init(pool_byte_ty*, size_t, size_t);
 void* p_alloc(pool_byte_ty*);

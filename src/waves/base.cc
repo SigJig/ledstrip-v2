@@ -31,6 +31,7 @@ wave_make(struct fl_driver* driver, struct wave_iface* iface)
 
     if (!pool_initialized) {
         p_init(pool, POOL_LENGTH, sizeof(struct wave));
+        pool_initialized = 1;
     }
 
     struct wave* wave = (struct wave*)p_alloc(pool);

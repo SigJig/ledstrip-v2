@@ -4,6 +4,10 @@
 void
 p_init(pool_byte_ty* pool_mem, size_t length, size_t elem_size)
 {
+    for (size_t i = 0; i < POOL_REAL_SIZE(length, elem_size); i++) {
+        pool_mem[i] = 0;
+    }
+
     struct pool* p = (struct pool*)pool_mem;
 
     *p = (struct pool){.mem = (pool_byte_ty*)(p + 1),
