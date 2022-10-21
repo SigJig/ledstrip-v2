@@ -5,6 +5,11 @@
 #include "explode.h"
 #include "implode.h"
 #include "pulse.h"
+#include "utils/pool.h"
+
+#define POOL_LENGTH 10
+
+static pool_byte_ty pool[POOL_REAL_SIZE(POOL_LENGTH, sizeof(struct wave))];
 
 static struct wave* (*wave_factories[])(struct fl_driver*) = {
     explode_make,
@@ -18,10 +23,17 @@ wave_random(struct fl_driver* driver)
     return wave_factories[random(0, sizeof(wave_factories) /
                                         sizeof(*wave_factories))](driver);
 }
+
 struct wave*
 wave_make(struct fl_driver* driver, struct wave_iface* iface)
 {
-    struct wave* wave = (struct wave*)malloc(sizeof(*wave));
+    static uint8_t pool_initialized = 0;
+
+    if (!pool_initialized) {
+        p_init(pool, POOL_LENGTH, sizeof(struct wave));
+    }
+
+    struct wave* wave = (struct wave*)p_alloc(pool);
 
     if (!wave) {
         return NULL;
@@ -52,7 +64,7 @@ wave_destroy(struct wave* wv)
         wv->iface->destroy(wv->data);
     }
 
-    free(wv);
+    p_free(wv);
 }
 
 uint8_t
