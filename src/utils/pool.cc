@@ -25,7 +25,7 @@ p_alloc(pool_byte_ty* pool_mem)
             p->mem + (p->elem_size + sizeof(pool_header_ty)) * i;
 
         if (!(*(pool_header_ty*)addr)) {
-            return addr;
+            return addr + sizeof(pool_header_ty);
         }
     }
 
