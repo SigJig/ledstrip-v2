@@ -15,7 +15,7 @@ static pool_byte_ty pool[POOL_REAL_SIZE(10, sizeof(int))];
 void
 setup()
 {
-#if 1
+    pinMode(LED_BUILTIN, OUTPUT);
     randomSeed(analogRead(A0));
     Serial.begin(9600);
     driver = driver_init(60 * 2);
@@ -25,8 +25,9 @@ setup()
     p_init(pool, 10, sizeof(int));
 
     wv = wave_random(&driver);
+#if 0
 #else
-// wv = NULL;
+    // wv = NULL;
 #endif
 }
 
@@ -46,10 +47,13 @@ loop()
     Serial.println("Free: ");
     p_free(mem);
     Serial.println("Done");
+    digitalWrite(LED_BUILTIN, HIGH);
 
-#else
+#elif 0
     driver.fastled->clear();
     driver.out[0] = CRGB::Blue;
     driver.fastled->show();
+#else
+    digitalWrite(LED_BUILTIN, HIGH);
 #endif
 }

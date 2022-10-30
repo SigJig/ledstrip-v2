@@ -20,8 +20,10 @@ static struct wave* (*wave_factories[])(struct fl_driver*) = {
 struct wave*
 wave_random(struct fl_driver* driver)
 {
-    return wave_factories[random(0, sizeof(wave_factories) /
-                                        sizeof(*wave_factories))](driver);
+    struct wave* (*fac)(struct fl_driver*) = wave_factories[random(
+        0, sizeof(wave_factories) / sizeof(*wave_factories))];
+
+    return fac(driver);
 }
 
 struct wave*

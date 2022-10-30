@@ -1,4 +1,8 @@
-
+/**
+ * TODO:
+ * [   ] Change all the headers to the start and pack with 1 bit each address
+ * [   ] Make sure every slot is aligned
+ */
 #ifndef POOL_H
 #define POOL_H
 
@@ -6,7 +10,7 @@
 #include <stdint.h>
 
 typedef uint8_t pool_byte_ty;
-typedef uint8_t pool_header_ty;
+typedef uint32_t pool_header_ty;
 
 struct pool {
     pool_byte_ty* mem;

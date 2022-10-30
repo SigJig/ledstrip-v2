@@ -21,11 +21,13 @@ p_alloc(pool_byte_ty* pool_mem)
     struct pool* p = (struct pool*)pool_mem;
 
     for (size_t i = 0; i < p->length; i++) {
-        pool_byte_ty* addr =
-            p->mem + (p->elem_size + sizeof(pool_header_ty)) * i;
+        pool_header_ty* addr =
+            (pool_header_ty*)(p->mem +
+                              (p->elem_size + sizeof(pool_header_ty)) * i);
 
-        if (!(*(pool_header_ty*)addr)) {
-            return addr + sizeof(pool_header_ty);
+        if (!(*addr)) {
+            *addr = 1;
+            return addr + 1;
         }
     }
 
