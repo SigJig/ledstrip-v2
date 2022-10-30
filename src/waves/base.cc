@@ -67,7 +67,7 @@ wave_destroy(struct wave* wv)
         wv->iface->destroy(wv->data);
     }
 
-    p_free(wv);
+    p_free(pool, wv);
 }
 
 uint8_t

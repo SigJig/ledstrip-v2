@@ -44,12 +44,17 @@ setup()
 void
 loop()
 {
+#if 0
     if (wv && !wave_tick(wv)) {
         driver.fastled->clear(true);
         wave_destroy(wv);
         wv = wave_random(&driver);
         Serial.println((int)(uintptr_t)wv);
     };
+#else
+    driver.out[0] = CRGB(255, 0, 255);
+    driver.fastled->show();
+#endif
 
     _builtin_tick();
 }

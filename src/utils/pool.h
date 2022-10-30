@@ -9,20 +9,39 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef uint8_t pool_byte_ty;
-typedef uint32_t pool_header_ty;
+typedef uint8_t pool_bitmap_ty;
+
+#ifndef POOL_FREE_NULLIFY
+#define POOL_FREE_NULLIFY 1
+#endif
 
 struct pool {
-    pool_byte_ty* mem;
+    uintptr_t mem;
     size_t length;
     size_t elem_size;
 };
 
+#define __ALIGNMENT 4
+#define _BITMAP_SIZE (sizeof(pool_bitmap_ty) * 8)
+#define _align(x) ((x + (__ALIGNMENT - 1)) & ~(__ALIGNMENT - 1))
+#define _bitmap_tot_sz(x)                                                      \
+    (_align((x / _BITMAP_SIZE) + ((x % _BITMAP_SIZE) != 0)))
+#define _num_bitmap(x) (_bitmap_tot_sz(x) / sizeof(pool_bitmap_ty))
+
 #define POOL_REAL_SIZE(nitems, bytes)                                          \
-    (sizeof(struct pool) + (bytes + sizeof(pool_header_ty)) * nitems)
+    (sizeof(struct pool) + _bitmap_tot_sz(nitems) + bytes * nitems)
 
 void p_init(pool_byte_ty*, size_t, size_t);
 void* p_alloc(pool_byte_ty*);
-void p_free(void*);
+void p_free(pool_byte_ty*, void*);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // POOL_H
