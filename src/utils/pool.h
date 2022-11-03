@@ -26,12 +26,11 @@ struct pool {
     size_t elem_size;
 };
 
-#define __ALIGNMENT 4
+#define __POOL_ALIGNMENT 4
 #define _BITMAP_SIZE (sizeof(pool_bitmap_ty) * 8)
-#define _align(x) ((x + (__ALIGNMENT - 1)) & ~(__ALIGNMENT - 1))
+#define _align(x) ((x + (__POOL_ALIGNMENT - 1)) & ~(__POOL_ALIGNMENT - 1))
 #define _bitmap_tot_sz(x)                                                      \
     (_align((x / _BITMAP_SIZE) + ((x % _BITMAP_SIZE) != 0)))
-#define _num_bitmap(x) (_bitmap_tot_sz(x) / sizeof(pool_bitmap_ty))
 
 #define POOL_REAL_SIZE(nitems, bytes)                                          \
     (sizeof(struct pool) + _bitmap_tot_sz(nitems) + bytes * nitems)

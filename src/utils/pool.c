@@ -2,6 +2,8 @@
 #include "pool.h"
 #include <string.h>
 
+#define _num_bitmap(x) (_bitmap_tot_sz(x) / sizeof(pool_bitmap_ty))
+
 static void
 _init(uintptr_t mem, size_t length, size_t elem_size)
 {
@@ -39,10 +41,9 @@ _alloc(uintptr_t pool_mem)
         bmap++;
     }
 
-    pool_bitmap_ty tmp = *bmap;
     uint8_t index = 0;
 
-    for (; (tmp >> index) & 0x1; index++) {
+    for (; (*bmap >> index) & 0x1; index++) {
     }
 
     *bmap |= (0x1 << index);
@@ -67,7 +68,7 @@ _free(uintptr_t pool_mem, uintptr_t mem)
         memset((void*)_mem_offset(p, offset, index), 0, p->elem_size);
     }
 
-    *(uint8_t*)(pool_mem + offset) &= ~(0x1 << index);
+    *(pool_bitmap_ty*)(pool_mem + sizeof(*p) + offset) &= ~(0x1 << index);
 }
 
 void
