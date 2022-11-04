@@ -42,11 +42,12 @@ wave_make(struct fl_driver* driver, struct wave_iface* iface)
         return NULL;
     }
 
-    *wave = (struct wave){.last_tick = 0,
-                          .tick_interval = WAVE_TICK_INTERVAL,
-                          .driver = driver,
-                          .iface = iface,
-                          .data = NULL};
+    *wave = (struct wave){
+        .last_tick = 0,
+        .tick_interval = WAVE_TICK_INTERVAL,
+        .driver = driver,
+        .iface = iface,
+        .data = NULL};
 
     if (wave->iface->make != NULL) {
         wave->data = wave->iface->make(wave);

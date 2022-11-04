@@ -11,9 +11,25 @@ _init(uintptr_t mem, size_t length, size_t elem_size)
 
     struct pool* p = (struct pool*)mem;
 
-    *p = (struct pool){.mem = mem + sizeof(*p) + _bitmap_tot_sz(length),
-                       .length = length,
-                       .elem_size = elem_size};
+    *p = (struct pool){
+        .mem = mem + sizeof(*p) + _bitmap_tot_sz(length),
+        .length = length,
+        .elem_size = elem_size};
+
+    size_t required = _required_bytes(length);
+    size_t padding = _bitmap_tot_sz(length) - required;
+    size_t numbits = sizeof(pool_bitmap_ty) * 8;
+
+    pool_bitmap_ty* last_used =
+        (pool_bitmap_ty*)(mem + sizeof(*p) + required - 1);
+
+    for (size_t i = 1; i <= padding; i++) {
+        *(last_used + i) = 0xff;
+    }
+
+    for (uint8_t i = length % numbits; i < numbits; i++) {
+        *last_used |= 0x1 << i;
+    }
 }
 
 static uintptr_t

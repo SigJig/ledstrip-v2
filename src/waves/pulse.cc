@@ -79,19 +79,21 @@ _pulse_destroy(struct pulse* p)
 }
 
 static uint8_t
-__available(struct pulse* last, struct pulse_data* data,
-            struct fl_driver* driver)
+__available(
+    struct pulse* last, struct pulse_data* data, struct fl_driver* driver
+)
 {
     return !data->reverse && last->pos >= data->pulse_length &&
-           last->pos - data->pulse_length >= data->pulse_interval;
+           (last->pos - data->pulse_length >= data->pulse_interval);
 }
 
 static uint8_t
-__available_reverse(struct pulse* last, struct pulse_data* data,
-                    struct fl_driver* driver)
+__available_reverse(
+    struct pulse* last, struct pulse_data* data, struct fl_driver* driver
+)
 {
-    return data->reverse && driver->num_leds - last->pos + data->pulse_length <
-                                driver->num_leds - data->pulse_interval;
+    return data->reverse && (driver->num_leds - last->pos + data->pulse_length <
+                             driver->num_leds - data->pulse_interval);
 }
 
 static uint8_t

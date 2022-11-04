@@ -5,3 +5,11 @@ PointerAlignment: Left
 BreakBeforeBraces: Linux
 AllowShortIfStatementsOnASingleLine: false
 IndentCaseLabels: false
+AlignAfterOpenBracket: BlockIndent
+BinPackArguments: true
+BinPackParameters: true
+AlignOperands: Align
+PenaltyBreakAssignment: 6
+PenaltyBreakAssignment: 20
+PenaltyBreakBeforeFirstCallParameter: 0
+PenaltyReturnTypeOnItsOwnLine: 100
