@@ -1,5 +1,6 @@
 
 #include "utils/pool.h"
+#include "common.h"
 #include <assert.h>
 
 struct test
@@ -19,12 +20,16 @@ int main(void)
     struct pool *p = (struct pool *)pool;
 
     assert(p);
+    DEBUG(printf("mem: %lu, comp: %lu, bitmap size: %zu\n", p->mem, ((uintptr_t)pool) + sizeof(*p) + 16, _bitmap_tot_sz(100)));
     assert(p->mem == ((uintptr_t)pool) + sizeof(*p) + 16);
     assert(*(pool_bitmap_ty *)(pool + sizeof(*p)) == 0x1);
+
+#if 0
     for (int i = 1; i < 16; i++)
     {
         assert(!(*(pool_bitmap_ty *)(pool + sizeof(*p) + i)));
     }
+#endif
 
     for (int i = 0; i < 99; i++)
     {
@@ -41,7 +46,7 @@ int main(void)
         p_free(pool, x + i);
     }
 
-    for (int i = 0; i < 16; i++)
+    for (int i = 0; i < 12; i++)
     {
         assert(!(*(pool_bitmap_ty *)(pool + sizeof(*p) + i)));
     }

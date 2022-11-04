@@ -1,5 +1,8 @@
 
+#define DEBUG_ENABLED 0
+
 #include "pool.h"
+#include "../common.h"
 #include <string.h>
 
 #define _num_bitmap(x) (_bitmap_tot_sz(x) / sizeof(pool_bitmap_ty))
@@ -16,12 +19,19 @@ _init(uintptr_t mem, size_t length, size_t elem_size)
         .length = length,
         .elem_size = elem_size};
 
+    DEBUG(printf("mem: %lu, %lu\n", mem, p->mem));
+
     size_t required = _required_bytes(length);
     size_t padding = _bitmap_tot_sz(length) - required;
-    size_t numbits = sizeof(pool_bitmap_ty) * 8;
+    size_t numbits = _BITMAP_SIZE;
 
     pool_bitmap_ty* last_used =
         (pool_bitmap_ty*)(mem + sizeof(*p) + required - 1);
+
+    DEBUG(printf(
+        "pool: <padding: %zu, required: %zu, numbits: %zu>\n", padding,
+        required, numbits
+    ));
 
     for (size_t i = 1; i <= padding; i++) {
         *(last_used + i) = 0xff;
@@ -49,7 +59,8 @@ _alloc(uintptr_t pool_mem)
     pool_bitmap_ty* bmap = (pool_bitmap_ty*)(pool_mem + sizeof(*p));
     uint8_t offset = 0;
 
-    while (!(~(*bmap))) {
+    while (!(~(*bmap) & 0xff)) {
+        // DEBUG(printf("offset: %i\n", offset));
         if (++offset >= _num_bitmap(p->length)) {
             return 0;
         }
@@ -61,6 +72,8 @@ _alloc(uintptr_t pool_mem)
 
     for (; (*bmap >> index) & 0x1; index++) {
     }
+
+    DEBUG(printf("setting index: %i, offset: %i\n", index, offset));
 
     *bmap |= (0x1 << index);
 

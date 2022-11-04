@@ -29,7 +29,7 @@ struct pool {
 #define __POOL_ALIGNMENT 4
 #define _BITMAP_SIZE (sizeof(pool_bitmap_ty) * 8)
 #define _align(x) ((x + (__POOL_ALIGNMENT - 1)) & ~(__POOL_ALIGNMENT - 1))
-#define _required_bytes(x) (x / _BITMAP_SIZE) + ((x % _BITMAP_SIZE) != 0)
+#define _required_bytes(x) ((x / _BITMAP_SIZE) + ((x % _BITMAP_SIZE) != 0))
 #define _bitmap_tot_sz(x) (_align(_required_bytes(x)))
 
 #define POOL_REAL_SIZE(nitems, bytes)                                          \
