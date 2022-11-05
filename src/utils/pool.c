@@ -59,6 +59,8 @@ _alloc(uintptr_t pool_mem)
     pool_bitmap_ty* bmap = (pool_bitmap_ty*)(pool_mem + sizeof(*p));
     uint8_t offset = 0;
 
+    // the inverse of 0xff becomes 0x100, which is why we
+    // & with the least significant 8 bits
     while (!(~(*bmap) & 0xff)) {
         // DEBUG(printf("offset: %i\n", offset));
         if (++offset >= _num_bitmap(p->length)) {

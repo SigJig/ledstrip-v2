@@ -14,7 +14,7 @@ dir_guard=@mkdir -p $(@D)
 
 all: mkdir $(BUILD)/test.out
 
-$(BUILD)/test.out: $(BUILD)/lib.a $(TEST_OBJECTS)
+$(BUILD)/test.out: $(SRC_OBJECTS) $(TEST_OBJECTS)
 	$(dir_guard)
 	$(CC) -o $@ $^
 

@@ -24,17 +24,18 @@ int main(void)
     assert(p->mem == ((uintptr_t)pool) + sizeof(*p) + 16);
     assert(*(pool_bitmap_ty *)(pool + sizeof(*p)) == 0x1);
 
-#if 0
-    for (int i = 1; i < 16; i++)
+    for (int i = 1; i < 100; i++)
     {
-        assert(!(*(pool_bitmap_ty *)(pool + sizeof(*p) + i)));
+        assert((uintptr_t)p_alloc(pool) == ((uintptr_t)pool) + sizeof(*p) + 16 + i * p->elem_size);
+    }
+
+#if 1
+    for (int i = 1; i < 12; i++)
+    {
+        assert((*(pool_bitmap_ty *)(pool + sizeof(*p) + i)));
     }
 #endif
-
-    for (int i = 0; i < 99; i++)
-    {
-        p_alloc(pool);
-    }
+    assert((*(pool_bitmap_ty *)(pool + sizeof(*p) + 12)) == 0xff);
 
     assert(!p_alloc(pool));
     p_free(pool, t);
@@ -50,6 +51,7 @@ int main(void)
     {
         assert(!(*(pool_bitmap_ty *)(pool + sizeof(*p) + i)));
     }
+    assert((*(pool_bitmap_ty *)(pool + sizeof(*p) + 12)) == 0xf0);
 
     return 0;
 }
