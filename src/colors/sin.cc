@@ -13,7 +13,7 @@ get(void* data)
         return CRGB::Red;
     }
 
-    uint8_t* mem = (uint8_t*)(uintptr_t)data;
+    uint8_t* mem = (uint8_t*)data;
     *mem += 1;
 
     return CHSV(sin8(*mem), 255, 100);

@@ -3,6 +3,7 @@ IndentWidth: 4
 AlwaysBreakAfterReturnType: AllDefinitions
 PointerAlignment: Left
 BreakBeforeBraces: Linux
+ColumnLimit: 80
 AllowShortIfStatementsOnASingleLine: false
 IndentCaseLabels: false
 AlignAfterOpenBracket: BlockIndent
