@@ -7,7 +7,7 @@
 #include "pulse.h"
 #include "utils/pool.h"
 
-#define POOL_LENGTH 10
+#define POOL_LENGTH 1
 
 static pool_byte_ty pool[POOL_REAL_SIZE(POOL_LENGTH, sizeof(struct wave))];
 
@@ -21,7 +21,8 @@ struct wave*
 wave_random(struct fl_driver* driver)
 {
     struct wave* (*fac)(struct fl_driver*) = wave_factories[random(
-        0, sizeof(wave_factories) / sizeof(*wave_factories))];
+        0, sizeof(wave_factories) / sizeof(*wave_factories)
+    )];
 
     return fac(driver);
 }
@@ -29,12 +30,7 @@ wave_random(struct fl_driver* driver)
 struct wave*
 wave_make(struct fl_driver* driver, struct wave_iface* iface)
 {
-    static uint8_t pool_initialized = 0;
-
-    if (!pool_initialized) {
-        p_init(pool, POOL_LENGTH, sizeof(struct wave));
-        pool_initialized = 1;
-    }
+    POOL_ENSURE_INIT(pool, POOL_LENGTH, sizeof(struct wave));
 
     struct wave* wave = (struct wave*)p_alloc(pool);
 

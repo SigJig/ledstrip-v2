@@ -1,12 +1,18 @@
 
 #include "implode.h"
-#include "../utils.h"
 #include "colors/sin.h"
+#include "utils.h"
+#include "utils/pool.h"
 
 struct implode_data {
     struct colorizer color;
     uint8_t center, offset;
 };
+
+#define POOL_LENGTH 1
+
+static pool_byte_ty
+    pool[POOL_REAL_SIZE(POOL_LENGTH, sizeof(struct implode_data))];
 
 static uint8_t
 tick(struct wave* wv)
@@ -34,14 +40,16 @@ destroy(void* data)
     if (data) {
         colorizer_destroy(&((struct implode_data*)data)->color);
 
-        free(data);
+        p_free(pool, data);
     }
 }
 
 static void*
 make(struct wave* wv)
 {
-    struct implode_data* data = (struct implode_data*)malloc(sizeof(*data));
+    POOL_ENSURE_INIT(pool, POOL_LENGTH, sizeof(struct implode_data));
+
+    struct implode_data* data = (struct implode_data*)p_alloc(pool);
 
     if (!data) {
         return NULL;

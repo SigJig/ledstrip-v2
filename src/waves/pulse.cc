@@ -1,7 +1,8 @@
 
 #include "pulse.h"
-#include "../utils.h"
 #include "colors/sin.h"
+#include "utils.h"
+#include "utils/pool.h"
 
 struct pulse {
     struct colorizer color;
@@ -19,6 +20,15 @@ struct pulse_data {
     struct pulse* head;
     struct pulse* tail;
 };
+
+#define DATA_LENGTH 1
+#define POOL_LENGTH (DATA_LENGTH * NUM_PULSES)
+
+static pool_byte_ty
+    pulse_pool[POOL_REAL_SIZE(POOL_LENGTH, sizeof(struct pulse))];
+
+static pool_byte_ty
+    data_pool[POOL_REAL_SIZE(DATA_LENGTH, sizeof(struct pulse_data))];
 
 static uint8_t
 _pulse_tick(struct pulse* pulse, struct pulse_data* data, struct wave* wv)
@@ -57,7 +67,9 @@ _pulse_tick(struct pulse* pulse, struct pulse_data* data, struct wave* wv)
 static struct pulse*
 _pulse_new(struct pulse_data* pd)
 {
-    struct pulse* p = (struct pulse*)malloc(sizeof(*p));
+    POOL_ENSURE_INIT(pulse_pool, POOL_LENGTH, sizeof(struct pulse));
+
+    struct pulse* p = (struct pulse*)p_alloc(pulse_pool);
 
     if (!p) {
         return NULL;
@@ -75,7 +87,7 @@ _pulse_destroy(struct pulse* p)
 {
     colorizer_destroy(&p->color);
 
-    free(p);
+    p_free(pulse_pool, p);
 }
 
 static uint8_t
@@ -151,7 +163,9 @@ static void destroy(void*);
 static void*
 make(struct wave* wv)
 {
-    struct pulse_data* data = (struct pulse_data*)malloc(sizeof(*data));
+    POOL_ENSURE_INIT(data_pool, DATA_LENGTH, sizeof(struct pulse_data));
+
+    struct pulse_data* data = (struct pulse_data*)p_alloc(data_pool);
 
     if (!data) {
         return NULL;
@@ -191,7 +205,7 @@ destroy(void* data)
         cur = tmp;
     }
 
-    free(data);
+    p_free(data_pool, data);
 }
 
 static struct wave_iface iface = {

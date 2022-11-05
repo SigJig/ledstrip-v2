@@ -33,10 +33,13 @@ _init(uintptr_t mem, size_t length, size_t elem_size)
         required, numbits
     ));
 
+    /*
+    Set the bits that are added for padding to 1.
+    This will prevent them from being seen as an available slot
+    */
     for (size_t i = 1; i <= padding; i++) {
         *(last_used + i) = 0xff;
     }
-
     for (uint8_t i = length % numbits; i < numbits; i++) {
         *last_used |= 0x1 << i;
     }

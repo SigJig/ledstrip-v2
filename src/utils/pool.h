@@ -35,6 +35,15 @@ struct pool {
 #define POOL_REAL_SIZE(nitems, bytes)                                          \
     (sizeof(struct pool) + _bitmap_tot_sz(nitems) + bytes * nitems)
 
+#define POOL_ENSURE_INIT(pool, length, elem_size)                              \
+    do {                                                                       \
+        static uint8_t __pool_ensure_init_ = 0;                                \
+        if (!__pool_ensure_init_) {                                            \
+            p_init(pool, length, elem_size);                                   \
+            __pool_ensure_init_ = 1;                                           \
+        }                                                                      \
+    } while (0)
+
 void p_init(pool_byte_ty*, size_t, size_t);
 void* p_alloc(pool_byte_ty*);
 void p_free(pool_byte_ty*, void*);
