@@ -5,6 +5,11 @@
 #include "explode.h"
 #include "implode.h"
 #include "pulse.h"
+#include "utils/pool.h"
+
+#define POOL_LENGTH 1
+
+static pool_byte_ty pool[POOL_REAL_SIZE(POOL_LENGTH, sizeof(struct wave))];
 
 static struct wave* (*wave_factories[])(struct fl_driver*) = {
     explode_make,
@@ -15,23 +20,30 @@ static struct wave* (*wave_factories[])(struct fl_driver*) = {
 struct wave*
 wave_random(struct fl_driver* driver)
 {
-    return wave_factories[random(0, sizeof(wave_factories) /
-                                        sizeof(*wave_factories))](driver);
+    struct wave* (*fac)(struct fl_driver*) = wave_factories[random(
+        0, sizeof(wave_factories) / sizeof(*wave_factories)
+    )];
+
+    return fac(driver);
 }
+
 struct wave*
 wave_make(struct fl_driver* driver, struct wave_iface* iface)
 {
-    struct wave* wave = (struct wave*)malloc(sizeof(*wave));
+    POOL_ENSURE_INIT(pool, POOL_LENGTH, sizeof(struct wave));
+
+    struct wave* wave = (struct wave*)p_alloc(pool);
 
     if (!wave) {
         return NULL;
     }
 
-    *wave = (struct wave){.last_tick = 0,
-                          .tick_interval = WAVE_TICK_INTERVAL,
-                          .driver = driver,
-                          .iface = iface,
-                          .data = NULL};
+    *wave = (struct wave){
+        .last_tick = 0,
+        .tick_interval = WAVE_TICK_INTERVAL,
+        .driver = driver,
+        .iface = iface,
+        .data = NULL};
 
     if (wave->iface->make != NULL) {
         wave->data = wave->iface->make(wave);
@@ -52,7 +64,7 @@ wave_destroy(struct wave* wv)
         wv->iface->destroy(wv->data);
     }
 
-    free(wv);
+    p_free(pool, wv);
 }
 
 uint8_t

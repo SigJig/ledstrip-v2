@@ -15,9 +15,10 @@ struct fl_driver {
 static inline struct fl_driver
 driver_init(int num_leds)
 {
-    struct fl_driver driver = {.num_leds = num_leds,
-                               .out = (CRGB*)malloc(sizeof(CRGB) * num_leds),
-                               .fastled = &FastLED};
+    struct fl_driver driver = {
+        .num_leds = num_leds,
+        .out = (CRGB*)malloc(sizeof(CRGB) * num_leds),
+        .fastled = &FastLED};
 
     memset(driver.out, 0, sizeof(*driver.out) * num_leds);
 
